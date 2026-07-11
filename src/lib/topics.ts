@@ -1,0 +1,68 @@
+import type { Topic } from "@/types";
+
+export const TOPICS: Topic[] = [
+  {
+    id: "daily-life",
+    label: "今日の出来事",
+    description: "日常のできごとや週末の予定について話す",
+    category: "日常生活",
+    emoji: "☀️",
+    starterPrompt: "Ask me how my day was and what I did today.",
+  },
+  {
+    id: "food",
+    label: "食事・カフェ",
+    description: "好きな料理やレストランでの注文",
+    category: "食事",
+    emoji: "🍽️",
+    starterPrompt: "Ask me about my favorite food or what I had for lunch.",
+  },
+  {
+    id: "travel",
+    label: "旅行の計画",
+    description: "行ってみたい場所や旅行の思い出",
+    category: "旅行",
+    emoji: "✈️",
+    starterPrompt: "Ask me where I want to travel and why.",
+  },
+  {
+    id: "work",
+    label: "仕事・勉強",
+    description: "仕事の内容や勉強の悩みを話す",
+    category: "仕事",
+    emoji: "💼",
+    starterPrompt: "Ask me what I do for work or what I'm studying.",
+  },
+  {
+    id: "hobby",
+    label: "趣味・好きなこと",
+    description: "最近ハマっていることや好きな活動",
+    category: "趣味",
+    emoji: "🎯",
+    starterPrompt: "Ask me about my hobbies and what I enjoy doing in my free time.",
+  },
+  {
+    id: "entertainment",
+    label: "映画・音楽",
+    description: "最近見た映画やドラマ、好きな音楽",
+    category: "エンタメ",
+    emoji: "🎬",
+    starterPrompt: "Ask me about a movie or TV show I've watched recently.",
+  },
+  {
+    id: "health",
+    label: "健康・運動",
+    description: "運動習慣や健康についての話",
+    category: "ライフスタイル",
+    emoji: "🏃",
+    starterPrompt: "Ask me about my exercise habits and how I stay healthy.",
+  },
+  {
+    id: "opinion",
+    label: "意見を言う練習",
+    description: "SNSや環境問題など、意見を英語で伝える",
+    category: "意見",
+    emoji: "💬",
+    starterPrompt: "Ask me for my opinion on social media and how it affects daily life.",
+  },
+];
