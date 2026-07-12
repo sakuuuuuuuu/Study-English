@@ -189,28 +189,6 @@ export function ConversationView({ topic }: ConversationViewProps) {
 
   return (
     <>
-      {/* 速度バー（ページ上部固定） */}
-      <div className="border-b px-4 py-2 shrink-0 bg-background">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">再生速度</span>
-          <div className="flex gap-1">
-            {SPEED_OPTIONS.map((rate) => (
-              <button
-                key={rate}
-                onClick={() => setPlaybackRate(rate)}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
-                  playbackRate === rate
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {rate}x
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* メッセージエリア */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-2xl mx-auto space-y-4">
@@ -294,10 +272,31 @@ export function ConversationView({ topic }: ConversationViewProps) {
           </button>
         </div>
 
-        {/* 状態ガイド */}
-        <p className="text-center text-xs text-muted-foreground mt-2 max-w-2xl mx-auto">
-          {guideText}
-        </p>
+        {/* 音声コントロール（速度 + 状態ガイド） */}
+        <div className="max-w-2xl mx-auto mt-2 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-xs text-muted-foreground">速度</span>
+            <div className="flex gap-1">
+              {SPEED_OPTIONS.map((rate) => (
+                <button
+                  key={rate}
+                  onClick={() => setPlaybackRate(rate)}
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                    playbackRate === rate
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {rate}x
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-xs text-muted-foreground text-right">
+            {guideText}
+          </p>
+        </div>
       </div>
     </>
   );

@@ -27,6 +27,17 @@ export interface ChatResponse {
   feedback: Feedback;
 }
 
+export interface GrammarPart {
+  phrase: string;
+  role: string;
+  explanation: string;
+}
+
+export interface GrammarResponse {
+  overview: string;
+  parts: GrammarPart[];
+}
+
 export interface Topic {
   id: string;
   label: string;
