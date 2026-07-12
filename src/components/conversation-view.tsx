@@ -67,6 +67,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
           id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
+          japaneseContent: data.japaneseReply,
           feedback: undefined,
         };
         setMessages([aiMsg]);
@@ -105,6 +106,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
           id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
+          japaneseContent: data.japaneseReply,
           feedback: data.feedback,
         };
 

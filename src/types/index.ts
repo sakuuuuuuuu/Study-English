@@ -4,6 +4,7 @@ export interface Message {
   id: string;
   role: Role;
   content: string;
+  japaneseContent?: string;
   feedback?: Feedback;
 }
 
@@ -22,6 +23,7 @@ export interface Feedback {
 
 export interface ChatResponse {
   reply: string;
+  japaneseReply: string;
   feedback: Feedback;
 }
 

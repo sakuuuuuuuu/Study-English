@@ -16,6 +16,7 @@ Do NOT wrap it in markdown code blocks. Return raw JSON only.
 
 {
   "reply": "Your English response here",
+  "japaneseReply": "replyの日本語訳をここに書く",
   "feedback": {
     "hasError": true or false,
     "corrections": [
