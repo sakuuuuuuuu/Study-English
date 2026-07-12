@@ -1,38 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { buildSystemPrompt, buildStarterMessage } from "@/lib/prompts";
+import { TOPICS } from "@/lib/topics";
 import type { ChatResponse } from "@/types";
 
 type ApiMessage = { role: "user" | "assistant"; content: string };
 
+/** 直近何件のやり取りを GPT に渡すか（1ターン = user + assistant の2件） */
+const MAX_HISTORY = 20;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
-      userMessage,
-      topicLabel,
-      starterPrompt,
-      history,
-    }: {
+    const { userMessage, topicId, history }: {
       userMessage: string;
-      topicLabel: string;
-      starterPrompt: string;
-      history: ApiMessage[];
+      topicId: string;
+      history: unknown[];
     } = body;
 
-    const systemPrompt = buildSystemPrompt(topicLabel);
+    // topicId をサーバー側の TOPICS リストで照合（クライアントの文字列を直接信頼しない）
+    const topic = TOPICS.find((t) => t.id === topicId);
+    if (!topic) {
+      return NextResponse.json({ error: "無効なトピックです" }, { status: 400 });
+    }
 
-    const isStarter = !userMessage && history.length === 0;
+    // 履歴をサーバー側で検証・件数制限（クライアントが何を送っても上限を強制）
+    const trimmedHistory: ApiMessage[] = (Array.isArray(history) ? history : [])
+      .filter(
+        (m): m is ApiMessage =>
+          typeof m === "object" &&
+          m !== null &&
+          ((m as ApiMessage).role === "user" || (m as ApiMessage).role === "assistant") &&
+          typeof (m as ApiMessage).content === "string"
+      )
+      .slice(-MAX_HISTORY);
+
+    const systemPrompt = buildSystemPrompt(topic.label);
+    const isStarter = !userMessage && trimmedHistory.length === 0;
 
     const messages: { role: "system" | "user" | "assistant"; content: string }[] =
       isStarter
         ? [
             { role: "system", content: systemPrompt },
-            { role: "user", content: buildStarterMessage(topicLabel, starterPrompt) },
+            { role: "user", content: buildStarterMessage(topic.label, topic.starterPrompt) },
           ]
         : [
             { role: "system", content: systemPrompt },
-            ...history,
+            ...trimmedHistory,
             { role: "user", content: userMessage },
           ];
 

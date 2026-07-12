@@ -45,8 +45,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userMessage,
-          topicLabel: topic.label,
-          starterPrompt: topic.starterPrompt,
+          topicId: topic.id,
           history: currentHistory,
         }),
       });
@@ -58,7 +57,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
 
       return res.json() as Promise<ChatResponse>;
     },
-    [topic.label, topic.starterPrompt]
+    [topic.id]
   );
 
   // 会話開始：マウント時にAIのオープニングを取得 → 読み上げ
