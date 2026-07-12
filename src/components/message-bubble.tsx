@@ -63,13 +63,14 @@ export function MessageBubble({ message, onReplay }: MessageBubbleProps) {
         </div>
       )}
 
-      {/* アクション行（補助操作 — フィードバックの後） */}
+      {/* アクション行（補助操作 — フィードバックの後）
+          min-h-[36px] でモバイルのタップ領域を確保 */}
       {!isUser && (
-        <div className="max-w-[80%] w-full mt-1.5 flex items-center gap-3">
+        <div className="max-w-[80%] w-full mt-1.5 flex items-center gap-1 flex-wrap">
           {onReplay && (
             <button
               onClick={() => onReplay(message.content)}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-1 py-0.5"
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 min-h-[36px] rounded-lg"
               aria-label="もう一度聞く"
             >
               <Volume2 className="w-3 h-3" />
@@ -80,7 +81,7 @@ export function MessageBubble({ message, onReplay }: MessageBubbleProps) {
           <button
             onClick={handleGrammar}
             disabled={grammarState === "loading"}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-1 py-0.5 disabled:opacity-50"
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 min-h-[36px] rounded-lg disabled:opacity-50"
             aria-label="文法を解説"
             aria-expanded={grammarState === "shown"}
           >
@@ -95,7 +96,7 @@ export function MessageBubble({ message, onReplay }: MessageBubbleProps) {
           {message.japaneseContent && (
             <button
               onClick={() => setShowJapanese((v) => !v)}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-1 py-0.5"
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 min-h-[36px] rounded-lg"
               aria-expanded={showJapanese}
               aria-label={showJapanese ? "日本語訳を隠す" : "日本語訳を見る"}
             >

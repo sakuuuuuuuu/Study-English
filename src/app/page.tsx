@@ -15,17 +15,19 @@ export default function Home() {
           </p>
 
           {/* How it works */}
-          <div className="flex items-center justify-center gap-2 flex-wrap text-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm">
             <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2 font-medium">
               <span className="text-base">1️⃣</span>
               トピックを選ぶ
             </div>
-            <span className="text-muted-foreground text-base">→</span>
+            <span className="text-muted-foreground sm:hidden">↓</span>
+            <span className="text-muted-foreground hidden sm:inline">→</span>
             <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2 font-medium">
               <span className="text-base">2️⃣</span>
               マイクで英語を話す
             </div>
-            <span className="text-muted-foreground text-base">→</span>
+            <span className="text-muted-foreground sm:hidden">↓</span>
+            <span className="text-muted-foreground hidden sm:inline">→</span>
             <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2 font-medium">
               <span className="text-base">3️⃣</span>
               日本語でフィードバック

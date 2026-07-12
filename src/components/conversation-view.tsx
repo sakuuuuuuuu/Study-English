@@ -218,15 +218,18 @@ export function ConversationView({ topic }: ConversationViewProps) {
         </div>
       </div>
 
-      {/* 入力エリア */}
-      <div className="border-t px-4 py-4 shrink-0 bg-background">
+      {/* 入力エリア（pb で iPhone ホームインジケーターを回避） */}
+      <div className="border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shrink-0 bg-background">
         <div className="flex items-end gap-3 max-w-2xl mx-auto">
 
-          {/* マイクボタン（Push-to-talk、押したときにTTSも止まる） */}
+          {/* マイクボタン（Push-to-talk）
+              w-14 h-14 = 56px でモバイル推奨タップ領域を確保。
+              onPointerCancel でタッチが OS に横取りされたときも録音を止める。 */}
           <button
             onPointerDown={handleMicDown}
             onPointerUp={stopRecording}
             onPointerLeave={stopRecording}
+            onPointerCancel={stopRecording}
             onContextMenu={(e) => e.preventDefault()}
             disabled={isLoading}
             aria-label={
@@ -236,7 +239,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
                 ? "再生中（押して話す）"
                 : "マイクで話す（長押し）"
             }
-            className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all select-none touch-none ${
+            className={`shrink-0 w-14 h-14 rounded-full flex items-center justify-center transition-all select-none touch-none ${
               recordingState === "recording"
                 ? "bg-red-500 text-white scale-110 shadow-lg shadow-red-500/30 animate-pulse"
                 : recordingState === "transcribing"
@@ -267,12 +270,12 @@ export function ConversationView({ topic }: ConversationViewProps) {
             className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 disabled:opacity-50 leading-relaxed"
           />
 
-          {/* 送信ボタン */}
+          {/* 送信ボタン（44px = モバイル推奨最小タップ領域） */}
           <button
             onClick={handleSend}
             disabled={isBusy || !input.trim()}
             aria-label="送信"
-            className="shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-80 active:opacity-60"
+            className="shrink-0 w-11 h-11 rounded-full bg-primary flex items-center justify-center text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-80 active:opacity-60"
           >
             <Send className="w-4 h-4" />
           </button>
@@ -287,7 +290,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
                 <button
                   key={rate}
                   onClick={() => setPlaybackRate(rate)}
-                  className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                  className={`min-w-[40px] px-2 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     playbackRate === rate
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:text-foreground"
