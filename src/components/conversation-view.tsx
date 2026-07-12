@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
-import { Mic, Loader2, Send } from "lucide-react";
+import { Mic, Loader2, Send, Volume2 } from "lucide-react";
 import { MessageBubble } from "./message-bubble";
 import { useAudioRecorder } from "@/hooks/use-audio-recorder";
+import { useAudioPlayer } from "@/hooks/use-audio-player";
 import type { Message, ChatResponse, Topic } from "@/types";
 
 interface ConversationViewProps {
@@ -21,6 +22,12 @@ export function ConversationView({ topic }: ConversationViewProps) {
   const hasStarted = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { playingState, play, stop } = useAudioPlayer();
+
+  // ref 経由で常に最新の play を参照（useCallback の依存配列問題を回避）
+  const playRef = useRef(play);
+  playRef.current = play;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,7 +56,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
     [topic.label, topic.starterPrompt]
   );
 
-  // 会話開始：マウント時にAIのオープニングを取得
+  // 会話開始：マウント時にAIのオープニングを取得 → 読み上げ
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
@@ -60,10 +67,11 @@ export function ConversationView({ topic }: ConversationViewProps) {
           id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
-          feedback: undefined, // スターターにフィードバック不要
+          feedback: undefined,
         };
         setMessages([aiMsg]);
         setApiHistory([{ role: "assistant", content: data.reply }]);
+        playRef.current(data.reply); // 開幕も読み上げる
       })
       .catch(() => {
         toast.error("AIとの接続に失敗しました。ページを再読み込みしてください。");
@@ -102,6 +110,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
 
         setMessages((prev) => [...prev, aiMsg]);
         setApiHistory([...historyWithUser, { role: "assistant", content: data.reply }]);
+        playRef.current(data.reply); // AI返答を読み上げ
       } catch {
         toast.error("AIとの通信に失敗しました。もう一度お試しください。");
         setMessages((prev) => prev.slice(0, -1));
@@ -113,7 +122,6 @@ export function ConversationView({ topic }: ConversationViewProps) {
     [isLoading, apiHistory, callChatApi]
   );
 
-  // テキスト送信
   const handleSend = () => {
     sendMessage(input.trim());
     setInput("");
@@ -126,7 +134,6 @@ export function ConversationView({ topic }: ConversationViewProps) {
     }
   };
 
-  // 音声文字起こし完了 → 自動送信
   const handleTranscript = useCallback(
     (text: string) => sendMessage(text),
     [sendMessage]
@@ -141,6 +148,12 @@ export function ConversationView({ topic }: ConversationViewProps) {
     onError: handleMicError,
   });
 
+  // マイクを押したとき：TTS を止めてから録音開始
+  const handleMicDown = () => {
+    stop();
+    startRecording();
+  };
+
   const isBusy = isLoading || recordingState !== "idle";
 
   const textareaPlaceholder =
@@ -149,6 +162,17 @@ export function ConversationView({ topic }: ConversationViewProps) {
       : recordingState === "transcribing"
       ? "音声を変換中…"
       : "英語でメッセージを入力… （Enterで送信・Shift+Enterで改行）";
+
+  const guideText =
+    recordingState === "recording"
+      ? "🔴 録音中 — ボタンを離すと送信されます"
+      : recordingState === "transcribing"
+      ? "⏳ 音声を認識しています…"
+      : playingState === "loading"
+      ? "⏳ 音声を生成しています…"
+      : playingState === "playing"
+      ? "🔊 AIが話しています — マイクを押せば割り込めます"
+      : "🎙 マイクボタンを長押しして話してください";
 
   return (
     <>
@@ -179,9 +203,9 @@ export function ConversationView({ topic }: ConversationViewProps) {
       <div className="border-t px-4 py-4 shrink-0 bg-background">
         <div className="flex items-end gap-3 max-w-2xl mx-auto">
 
-          {/* マイクボタン（Push-to-talk） */}
+          {/* マイクボタン（Push-to-talk、押したときにTTSも止まる） */}
           <button
-            onPointerDown={startRecording}
+            onPointerDown={handleMicDown}
             onPointerUp={stopRecording}
             onPointerLeave={stopRecording}
             onContextMenu={(e) => e.preventDefault()}
@@ -189,6 +213,8 @@ export function ConversationView({ topic }: ConversationViewProps) {
             aria-label={
               recordingState === "recording"
                 ? "録音中（離すと送信）"
+                : playingState === "playing"
+                ? "再生中（押して話す）"
                 : "マイクで話す（長押し）"
             }
             className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all select-none touch-none ${
@@ -196,11 +222,15 @@ export function ConversationView({ topic }: ConversationViewProps) {
                 ? "bg-red-500 text-white scale-110 shadow-lg shadow-red-500/30 animate-pulse"
                 : recordingState === "transcribing"
                 ? "bg-muted text-muted-foreground cursor-wait"
+                : playingState !== "idle"
+                ? "bg-primary/15 text-primary ring-2 ring-primary/30"
                 : "bg-muted hover:bg-muted/70 text-foreground disabled:opacity-40"
             }`}
           >
             {recordingState === "transcribing" ? (
               <Loader2 className="w-5 h-5 animate-spin" />
+            ) : playingState !== "idle" ? (
+              <Volume2 className="w-5 h-5" />
             ) : (
               <Mic className="w-5 h-5" />
             )}
@@ -229,13 +259,9 @@ export function ConversationView({ topic }: ConversationViewProps) {
           </button>
         </div>
 
-        {/* 操作ガイド */}
+        {/* 状態ガイド */}
         <p className="text-center text-xs text-muted-foreground mt-2 max-w-2xl mx-auto">
-          {recordingState === "recording"
-            ? "🔴 録音中 — ボタンを離すと送信されます"
-            : recordingState === "transcribing"
-            ? "⏳ 音声を認識しています…"
-            : "🎙 マイクボタンを長押しして話してください"}
+          {guideText}
         </p>
       </div>
     </>
