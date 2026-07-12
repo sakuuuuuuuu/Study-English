@@ -30,7 +30,7 @@ export function useAudioPlayer() {
     setPlayingState("idle");
   }, []);
 
-  const play = useCallback(async (text: string) => {
+  const play = useCallback(async (text: string, rate: number = 1) => {
     cleanupAudio();
     setPlayingState("loading");
 
@@ -49,6 +49,7 @@ export function useAudioPlayer() {
 
       const audio = new Audio(url);
       audioRef.current = audio;
+      audio.playbackRate = rate;
 
       audio.onplay = () => setPlayingState("playing");
       audio.onended = () => {

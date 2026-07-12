@@ -11,7 +11,7 @@ export default function Home() {
             Lingua AI
           </h1>
           <p className="text-muted-foreground text-lg mb-8">
-            AIと英会話して、文法・表現のフィードバックをリアルタイムでもらおう
+            Speak. Learn. Repeat.
           </p>
 
           {/* How it works */}

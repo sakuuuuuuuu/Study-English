@@ -23,6 +23,11 @@ export function ConversationView({ topic }: ConversationViewProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const [playbackRate, setPlaybackRate] = useState(1);
+  // ref 経由でコールバック内から常に最新の速度を参照（stale closure 回避）
+  const playbackRateRef = useRef(playbackRate);
+  playbackRateRef.current = playbackRate;
+
   const { playingState, play, stop } = useAudioPlayer();
 
   // ref 経由で常に最新の play を参照（useCallback の依存配列問題を回避）
@@ -72,7 +77,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
         };
         setMessages([aiMsg]);
         setApiHistory([{ role: "assistant", content: data.reply }]);
-        playRef.current(data.reply); // 開幕も読み上げる
+        playRef.current(data.reply, playbackRateRef.current); // 開幕も読み上げる
       })
       .catch(() => {
         toast.error("AIとの接続に失敗しました。ページを再読み込みしてください。");
@@ -112,7 +117,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
 
         setMessages((prev) => [...prev, aiMsg]);
         setApiHistory([...historyWithUser, { role: "assistant", content: data.reply }]);
-        playRef.current(data.reply); // AI返答を読み上げ
+        playRef.current(data.reply, playbackRateRef.current); // AI返答を読み上げ
       } catch {
         toast.error("AIとの通信に失敗しました。もう一度お試しください。");
         setMessages((prev) => prev.slice(0, -1));
@@ -135,6 +140,11 @@ export function ConversationView({ topic }: ConversationViewProps) {
       handleSend();
     }
   };
+
+  const handleReplay = useCallback(
+    (text: string) => play(text, playbackRateRef.current),
+    [play]
+  );
 
   const handleTranscript = useCallback(
     (text: string) => sendMessage(text),
@@ -176,13 +186,37 @@ export function ConversationView({ topic }: ConversationViewProps) {
       ? "🔊 AIが話しています — マイクを押せば割り込めます"
       : "🎙 マイクボタンを長押しして話してください";
 
+  const SPEED_OPTIONS = [0.75, 1, 1.25, 1.5] as const;
+
   return (
     <>
+      {/* 速度バー（ページ上部固定） */}
+      <div className="border-b px-4 py-2 shrink-0 bg-background">
+        <div className="max-w-2xl mx-auto flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">再生速度</span>
+          <div className="flex gap-1">
+            {SPEED_OPTIONS.map((rate) => (
+              <button
+                key={rate}
+                onClick={() => setPlaybackRate(rate)}
+                className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                  playbackRate === rate
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {rate}x
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* メッセージエリア */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-2xl mx-auto space-y-4">
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
+            <MessageBubble key={msg.id} message={msg} onReplay={handleReplay} />
           ))}
 
           {isLoading && (
