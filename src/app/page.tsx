@@ -6,31 +6,44 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="border-b">
-        <div className="max-w-4xl mx-auto px-6 py-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
+        <div className="max-w-4xl mx-auto px-6 py-10 text-center">
+          {/* ブランド名（補助的） */}
+          <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase mb-4">
             Lingua AI
-          </h1>
-          <p className="text-muted-foreground text-lg mb-8">
-            Speak. Learn. Repeat.
           </p>
 
-          {/* How it works */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm">
-            <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2 font-medium">
-              <span className="text-base">1️⃣</span>
-              トピックを選ぶ
+          {/* メインヘッドライン */}
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
+            AIと英語で話して、
+            <br className="sm:hidden" />
+            スピーキング力を伸ばそう
+          </h1>
+          <p className="text-muted-foreground mb-10">
+            TOEIC 550 → 700 を目指す、AI英会話練習アプリ
+          </p>
+
+          {/* 使い方ステップ */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left max-w-2xl mx-auto">
+            <div className="bg-muted/50 rounded-2xl px-5 py-4">
+              <div className="text-2xl mb-2">🗂️</div>
+              <p className="font-semibold text-sm mb-1">1. トピックを選ぶ</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                日常会話・旅行・仕事など、話したいテーマを選びます
+              </p>
             </div>
-            <span className="text-muted-foreground sm:hidden">↓</span>
-            <span className="text-muted-foreground hidden sm:inline">→</span>
-            <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2 font-medium">
-              <span className="text-base">2️⃣</span>
-              マイクで英語を話す
+            <div className="bg-muted/50 rounded-2xl px-5 py-4">
+              <div className="text-2xl mb-2">🎙️</div>
+              <p className="font-semibold text-sm mb-1">2. マイクで英語を話す</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                マイクボタンを長押しして話すだけ。テキスト入力でも OK
+              </p>
             </div>
-            <span className="text-muted-foreground sm:hidden">↓</span>
-            <span className="text-muted-foreground hidden sm:inline">→</span>
-            <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2 font-medium">
-              <span className="text-base">3️⃣</span>
-              日本語でフィードバック
+            <div className="bg-muted/50 rounded-2xl px-5 py-4">
+              <div className="text-2xl mb-2">📝</div>
+              <p className="font-semibold text-sm mb-1">3. フィードバックをもらう</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                文法ミスや自然な表現を、日本語でわかりやすく解説します
+              </p>
             </div>
           </div>
         </div>
