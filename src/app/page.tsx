@@ -8,7 +8,7 @@ export default function Home() {
       <div className="border-b">
         <div className="max-w-4xl mx-auto px-6 py-12 text-center">
           <h1 className="text-4xl font-bold tracking-tight mb-3">
-            Study English
+            Lingua AI
           </h1>
           <p className="text-muted-foreground text-lg mb-8">
             AIと英会話して、文法・表現のフィードバックをリアルタイムでもらおう

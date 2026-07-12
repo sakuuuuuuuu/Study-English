@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Study English — AI英会話練習",
-  description: "AIと英会話練習をして、文法・表現のフィードバックをもらおう",
+  title: "Lingua AI",
+  description: "AIと英会話して、文法・表現のフィードバックをリアルタイムでもらおう",
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-# 設計書 — Study English
+# 設計書 — Lingua AI
 
 ## 1. プロダクト概要
 
