@@ -4,8 +4,27 @@ interface FeedbackPanelProps {
   feedback: Feedback;
 }
 
+/**
+ * GPT がプロンプトのテンプレート文をそのまま値として返すことがある（幻覚）。
+ * プロンプト由来と判定できる文字列は null として扱い、ユーザーに表示しない。
+ */
+function sanitizeOptionalField(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const templatePhrases = [
+    "なければ null",
+    "なければnull",
+    "場合、日本語で説明",
+    "場合,日本語で説明",
+    "the string",
+  ];
+  if (templatePhrases.some((phrase) => value.includes(phrase))) return null;
+  return value;
+}
+
 export function FeedbackPanel({ feedback }: FeedbackPanelProps) {
-  const { hasError, corrections, naturalAlternative, simplerExpression } = feedback;
+  const { hasError, corrections } = feedback;
+  const naturalAlternative = sanitizeOptionalField(feedback.naturalAlternative);
+  const simplerExpression = sanitizeOptionalField(feedback.simplerExpression);
 
   const hasContent = hasError || naturalAlternative || simplerExpression;
 

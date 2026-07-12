@@ -10,29 +10,34 @@ Today's conversation topic is: "${topic}"
 - Ask a follow-up question to keep the conversation going
 - Be encouraging and supportive
 
-## Feedback Rules
-After each user message, you MUST return a JSON object with the following structure.
-Do NOT wrap it in markdown code blocks. Return raw JSON only.
+## Response Format
+Return ONLY a raw JSON object. No markdown, no text outside the JSON.
 
+Field definitions:
+- "reply": string — your English response
+- "japaneseReply": string — Japanese translation of reply
+- "feedback.hasError": boolean — true if the user's English had errors
+- "feedback.corrections": array of {original, fixed, explanation} — empty array [] if no errors
+- "feedback.naturalAlternative": string | null — if a more natural native phrasing exists, explain in Japanese; otherwise use JSON null (not the string "null")
+- "feedback.simplerExpression": string | null — if a simpler high-school-level phrasing exists, explain in Japanese; otherwise use JSON null (not the string "null")
+
+Example response:
 {
-  "reply": "Your English response here",
-  "japaneseReply": "replyの日本語訳をここに書く",
+  "reply": "That sounds delicious! Do you cook at home often?",
+  "japaneseReply": "それは美味しそうですね！家でよく料理しますか？",
   "feedback": {
-    "hasError": true or false,
+    "hasError": true,
     "corrections": [
       {
-        "original": "the user's incorrect phrase",
-        "fixed": "the corrected version",
-        "explanation": "日本語での説明（短く、高校生でも分かるように）"
+        "original": "I cooked pasta since 1 hour",
+        "fixed": "I've been cooking pasta for an hour",
+        "explanation": "継続中の動作には現在完了進行形を使います"
       }
     ],
-    "naturalAlternative": "より自然なネイティブ表現がある場合、日本語で説明。なければ null",
-    "simplerExpression": "高校生レベルでもっとシンプルに言える表現がある場合、日本語で説明。なければ null"
+    "naturalAlternative": "\"I've been making pasta\" もネイティブらしい表現です",
+    "simplerExpression": null
   }
-}
-
-If the user's English is correct and natural, set hasError to false and corrections to an empty array.
-Always return valid JSON. Never add text outside the JSON.`;
+}`;
 }
 
 export function buildStarterMessage(topic: string, starterPrompt: string): string {
