@@ -28,11 +28,13 @@ export function ConversationView({ topic }: ConversationViewProps) {
   const playbackRateRef = useRef(playbackRate);
   playbackRateRef.current = playbackRate;
 
-  const { playingState, play, stop } = useAudioPlayer();
+  const { playingState, play, prefetch, stop } = useAudioPlayer();
 
-  // ref 経由で常に最新の play を参照（useCallback の依存配列問題を回避）
+  // ref 経由で常に最新の関数を参照（stale closure 回避）
   const playRef = useRef(play);
   playRef.current = play;
+  const prefetchRef = useRef(prefetch);
+  prefetchRef.current = prefetch;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -67,6 +69,8 @@ export function ConversationView({ topic }: ConversationViewProps) {
 
     callChatApi("", [])
       .then((data) => {
+        // テキスト到着直後に fetch を着火（play() より先にキャッシュを温める）
+        prefetchRef.current(data.reply);
         const aiMsg: Message = {
           id: crypto.randomUUID(),
           role: "assistant",
@@ -76,7 +80,7 @@ export function ConversationView({ topic }: ConversationViewProps) {
         };
         setMessages([aiMsg]);
         setApiHistory([{ role: "assistant", content: data.reply }]);
-        playRef.current(data.reply, playbackRateRef.current); // 開幕も読み上げる
+        playRef.current(data.reply, playbackRateRef.current);
       })
       .catch(() => {
         toast.error("AIとの接続に失敗しました。ページを再読み込みしてください。");
@@ -114,9 +118,11 @@ export function ConversationView({ topic }: ConversationViewProps) {
           feedback: data.feedback,
         };
 
+        // テキスト到着直後に fetch を着火（play() より先にキャッシュを温める）
+        prefetchRef.current(data.reply);
         setMessages((prev) => [...prev, aiMsg]);
         setApiHistory([...historyWithUser, { role: "assistant", content: data.reply }]);
-        playRef.current(data.reply, playbackRateRef.current); // AI返答を読み上げ
+        playRef.current(data.reply, playbackRateRef.current);
       } catch {
         toast.error("AIとの通信に失敗しました。もう一度お試しください。");
         setMessages((prev) => prev.slice(0, -1));
